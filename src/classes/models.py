@@ -72,33 +72,6 @@ class Route:
 
   def __repr__(self) -> str:
     return f"Route(nodes={self.nodes}, demand={self.total_demand}, distance={self.total_distance:.2f})";
-  """Time: O(1) appends, Space: O(n) where n is route length."""
-  def __init__(self, depot_id: int = 0):
-    self.nodes: list = [depot_id];
-    self.total_demand: int = 0;
-    self._depot_id = depot_id;
-
-  def add_customer(self, customer: "Customer") -> None:
-    self.nodes.append(customer.customer_id);
-    self.total_demand += customer.demand;
-
-  def close(self) -> None:
-    if self.nodes[-1] != self._depot_id:
-      self.nodes.append(self._depot_id);
-
-  def calculate_distance(self, distance_matrix: list) -> float:
-    """Time: O(n) to traverse route and sum distances."""
-    total = 0.0;
-    closed = self.nodes if self.nodes[-1] == self._depot_id else self.nodes + [self._depot_id];
-    for i in range(len(closed) - 1):
-      total += distance_matrix[closed[i]][closed[i + 1]];
-    return total;
-
-  def __len__(self) -> int:
-    return len(self.nodes);
-
-  def __repr__(self) -> str:
-    return f"Route(nodes={self.nodes}, demand={self.total_demand})";
 
 class VRPInstance:
   """Time: O(n^2) for from_coordinates, Space: O(n^2) for distance matrix."""
