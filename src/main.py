@@ -1,12 +1,17 @@
+# Libs
 import sys
 import os
 import glob
 
+# Classes
 from classes.models import Customer, VRPInstance
+
+# Utils
 from utils.core_utils import load_test_case, print_solution
 from utils.benchmarking import run_benchmark, print_benchmark_table
 from utils.visualisation import plot_solution
 
+# Algorithms
 from algorthms.clarke.clarke import run_naive_solution
 from algorthms.branch.branch import run_ai_solution
 from algorthms.genetic.genetic import run_optimised_solution

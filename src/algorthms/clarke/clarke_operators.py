@@ -1,88 +1,89 @@
-"""
-clarke_operators.py - Modular operators for the Clarke-Wright Savings algorithm
 
-Contains the mathematical operations, routing merges, and calculations
-decoupled from the main procedural loop.
-"""
-
-def compute_savings(distance_matrix: list) -> list:
-    """
-    Time: O(n^2), Space: O(n^2) - Computes and sorts savings.
-    Formula: s(i, j) = d(0, i) + d(0, j) - d(i, j)
-    """
+# Calculates the potential savings for merging any two customers.
+def compute_savings(distance_matrix):
+    # Total number of nodes
     number_of_nodes = len(distance_matrix)
-    savings = []
+    savings_list = []
 
-    for i in range(1, number_of_nodes):
-        for j in range(i + 1, number_of_nodes):
-            saving_value = distance_matrix[0][i] + distance_matrix[0][j] - distance_matrix[i][j]
-            savings.append((saving_value, i, j))
+    # Iterate through each pair of customers to find the best merge options
+    for customer_1 in range(1, number_of_nodes):
+        for customer_2 in range(customer_1 + 1, number_of_nodes):
+            savings_value = distance_matrix[0][customer_1] + distance_matrix[0][customer_2] - distance_matrix[customer_1][customer_2]
+            savings_list.append((savings_value, customer_1, customer_2))
+    # Sort the savings in descending order so we pick the best ones first
+    savings_list.sort(key=lambda entry: entry[0], reverse=True)
 
-    savings.sort(key=lambda entry: entry[0], reverse=True)
-    return savings
-
-
-def initialize_routes(number_of_nodes: int, demands: list) -> tuple:
-    """
-    Time: O(n), Space: O(n) - Initialises individual routes for all customers.
-    """
-    routes = [[i] for i in range(1, number_of_nodes)]
-    route_of = {i: routes[i - 1] for i in range(1, number_of_nodes)}
-    route_demand = {id(r): demands[r[0]] for r in routes}
-
-    return routes, route_of, route_demand
+    return savings_list
 
 
-def merge_routes(
-    customer_i: int,
-    customer_j: int,
-    routes: list,
-    route_of: dict,
-    route_demand: dict,
-    vehicle_capacity: int,
-) -> None:
-    """
-    Time: O(1) amortized, Space: O(1) - Evaluates constraints and executes a valid route merge.
-    """
-    route_i = route_of.get(customer_i)
-    route_j = route_of.get(customer_j)
+# Sets up the starting state where every customer has their own van.
+def initialize_routes(number_of_nodes, demands):
+    # Start with individual routes for each customer
+    routes_list = [[index] for index in range(1, number_of_nodes)]
 
+    # Map each customer to their current route list for fast lookup
+    customer_to_route_mapping = { customer_id: routes_list[customer_id - 1] for customer_id in range(1, number_of_nodes) }
+
+    # Track the current demand load of each route object
+    route_demand_tracker = { id(individual_route): demands[individual_route[0]] for individual_route in routes_list }
+
+    return routes_list, customer_to_route_mapping, route_demand_tracker
+
+
+    # Only merge if they are at the end of routes and vehicle capacity is not exceeded.
+def merge_routes(customer_i, customer_j, routes_list, customer_to_route_mapping, route_demand_tracker, vehicle_capacity):
+    route_i = customer_to_route_mapping.get(customer_i)
+    route_j = customer_to_route_mapping.get(customer_j)
+
+    # Exist and already in the same route?
     if route_i is None or route_j is None or route_i is route_j:
         return
 
-    i_at_end = route_i[-1] == customer_i
-    j_at_start = route_j[0] == customer_j
+    # A merge is only possible if the customers are at the connection points
+    is_customer_i_at_end = route_i[-1] == customer_i
+    is_customer_j_at_start = route_j[0] == customer_j
 
-    if not (i_at_end and j_at_start):
-        j_at_end = route_j[-1] == customer_j
-        i_at_start = route_i[0] == customer_i
-        if j_at_end and i_at_start:
+    if not (is_customer_i_at_end and is_customer_j_at_start):
+        # Check the reverse orientation
+        is_customer_j_at_end = route_j[-1] == customer_j
+        is_customer_i_at_start = route_i[0] == customer_i
+
+        if is_customer_j_at_end and is_customer_i_at_start:
+        # Swap variables to use the primary merge logic
             route_i, route_j = route_j, route_i
             customer_i, customer_j = customer_j, customer_i
         else:
             return
 
-    combined_demand = route_demand[id(route_i)] + route_demand[id(route_j)]
-    if combined_demand > vehicle_capacity:
+    # Check if the combined demand exceeds the fixed vehicle capacity
+    combined_route_demand = route_demand_tracker[id(route_i)] + route_demand_tracker[id(route_j)]
+    if combined_route_demand > vehicle_capacity:
         return
 
+    # Execute the merge
     route_i.extend(route_j)
 
-    for customer in route_j:
-        route_of[customer] = route_i
+    # Update mapping for all customers
+    for customer_node in route_j:
+        customer_to_route_mapping[customer_node] = route_i
 
-    routes.remove(route_j)
-    route_demand[id(route_i)] = combined_demand
+    # remove the old route and update the demand tracker
+    routes_list.remove(route_j)
+    route_demand_tracker[id(route_i)] = combined_route_demand
 
 
-def calculate_total_distance(routes: list, distance_matrix: list) -> float:
-    """
-    Time: O(n), Space: O(1) - Iterates through formatted routes to sum edge weights.
-    """
-    total_distance = 0.0
+    # Simple utility to sum up the costs of the final route paths.
+def calculate_total_distance(routes_list, distance_matrix):
+    total_travel_distance = 0.0
+    for route in routes_list:
+        # Distance from depot to first customer [cite: 9]
+        total_travel_distance += distance_matrix[0][route[0]]
 
-    for route in routes:
-        for index in range(len(route) - 1):
-            total_distance += distance_matrix[route[index]][route[index + 1]]
+        # Distances between each customer in the route
+        for edge_index in range(len(route) - 1):
+            total_travel_distance += distance_matrix[route[edge_index]][route[edge_index + 1]]
 
-    return total_distance
+        # Distance from last customer back to depot [cite: 9]
+        total_travel_distance += distance_matrix[route[-1]][0]
+
+    return total_travel_distance

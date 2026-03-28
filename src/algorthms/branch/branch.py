@@ -1,35 +1,14 @@
 """
-branch.py - Nearest Neighbour Heuristic with 2-opt Local Search for the CVRP
-
-This module was generated with the assistance of a generative AI tool (Claude,
-Anthropic) using the following prompt:
-
     "Implement a nearest-neighbour constructive heuristic for the Capacitated
     Vehicle Routing Problem in Python.  After construction, apply a 2-opt
     intra-route improvement step to reduce the total travel distance.
     The function signature must be:
         run_ai_solution(distance_matrix, demands, vehicle_capacity) -> dict
-    returning {'routes': list[list[int]], 'total_distance': float}."
+    returning {'routes': list[list[int]], 'total_distance': float}.
+    Attached is my other code, try follow the same consistency to ensure task work"
+"""
 
-The output was reviewed, corrected for edge-cases, and integrated into the
-project by the student.
-
-Algorithm overview
-------------------
-Phase 1 – Nearest Neighbour Construction
-    Starting from the depot, repeatedly visit the closest unvisited customer
-    that still fits in the current vehicle's remaining capacity.  When no
-    feasible customer exists, return to the depot and start a new route.
-
-    Time complexity: O(n²) per route; O(n² · k) overall where k = routes built.
-
-Phase 2 – 2-opt Intra-route Improvement
-    For each route, try all pairs (i, j) of non-adjacent edges.  Reversing the
-    sub-sequence between i and j is accepted if it reduces the route distance.
-    Repeat until no improving swap exists.
-
-    Time complexity: O(n² · iterations) per route.
-
+"""
 Assumptions & limitations
 --------------------------
 * Homogeneous fleet; unlimited number of vehicles (routes) allowed.
