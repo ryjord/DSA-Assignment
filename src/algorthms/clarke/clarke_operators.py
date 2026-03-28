@@ -1,6 +1,6 @@
 
 # Calculates the potential savings for merging any two customers.
-def compute_savings(distance_matrix):
+def savings(distance_matrix):
     # Total number of nodes
     number_of_nodes = len(distance_matrix)
     savings_list = []
@@ -17,7 +17,7 @@ def compute_savings(distance_matrix):
 
 
 # Sets up the starting state where every customer has their own van.
-def initialize_routes(number_of_nodes, demands):
+def setup_routes(number_of_nodes, demands):
     # Start with individual routes for each customer
     routes_list = [[index] for index in range(1, number_of_nodes)]
 
@@ -30,7 +30,7 @@ def initialize_routes(number_of_nodes, demands):
     return routes_list, customer_to_route_mapping, route_demand_tracker
 
 
-    # Only merge if they are at the end of routes and vehicle capacity is not exceeded.
+# Only merge if they are at the end of routes and vehicle capacity is not exceeded.
 def merge_routes(customer_i, customer_j, routes_list, customer_to_route_mapping, route_demand_tracker, vehicle_capacity):
     route_i = customer_to_route_mapping.get(customer_i)
     route_j = customer_to_route_mapping.get(customer_j)
@@ -72,8 +72,8 @@ def merge_routes(customer_i, customer_j, routes_list, customer_to_route_mapping,
     route_demand_tracker[id(route_i)] = combined_route_demand
 
 
-    # Simple utility to sum up the costs of the final route paths.
-def calculate_total_distance(routes_list, distance_matrix):
+# Simple utility to sum up the costs of the final route paths.
+def total_distance(routes_list, distance_matrix):
     total_travel_distance = 0.0
     for route in routes_list:
         # Distance from depot to first customer [cite: 9]

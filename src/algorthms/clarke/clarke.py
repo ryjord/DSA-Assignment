@@ -2,7 +2,7 @@
 import logging
 
 # Methods
-from .clarke_operators import ( compute_savings, initialize_routes, merge_routes, calculate_total_distance )
+from .clarke_operators import ( savings, setup_routes, merge_routes, total_distance )
 
 # Logging setup for visibility during execution
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
@@ -22,10 +22,10 @@ def run_naive_solution(distance_matrix, demands, vehicle_capacity):
         return { "routes": [[0, 0]], "total_distance": 0.0 }
 
     # Calculate the savings for every possible pair of customers
-    savings_list = compute_savings(distance_matrix)
+    savings_list = savings(distance_matrix)
 
     # Start with the star configurations
-    routes_list, customer_to_route_mapping, route_demand_tracker = initialize_routes( number_of_nodes, demands )
+    routes_list, customer_to_route_mapping, route_demand_tracker = setup_routes( number_of_nodes, demands )
 
     # Iterate through the savings list and greedily merge routes
     for customer_i, customer_j in savings_list:
@@ -35,7 +35,7 @@ def run_naive_solution(distance_matrix, demands, vehicle_capacity):
     final_routes_list = [[0] + individual_route + [0] for individual_route in routes_list]
 
     # Calculate the final objective value
-    total_travel_distance = calculate_total_distance(final_routes_list, distance_matrix)
+    total_travel_distance = total_distance(final_routes_list, distance_matrix)
     logger.debug(f"Clarke-Wright Completed. Best distance: {total_travel_distance:.4f}")
 
     # Return the results in a structured dictionary
