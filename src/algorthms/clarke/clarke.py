@@ -28,7 +28,7 @@ def run_naive_solution(distance_matrix, demands, vehicle_capacity):
     routes_list, customer_to_route_mapping, route_demand_tracker = setup_routes( number_of_nodes, demands )
 
     # Iterate through the savings list and greedily merge routes
-    for customer_i, customer_j in savings_list:
+    for savings_value, customer_i, customer_j in savings_list:
         merge_routes( customer_i, customer_j, routes_list, customer_to_route_mapping, route_demand_tracker, vehicle_capacity)
 
     # Finalise the routes

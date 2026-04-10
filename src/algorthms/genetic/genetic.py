@@ -10,7 +10,7 @@ logging.basicConfig(level = logging.INFO, format = "%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 # Meta Heuritstic approach
-def run_genetic_algorithm( distance_matrix, customer_demands, vehicle_capacity, population_size = 80, total_generations = 300, crossover_probability = 0.85, mutation_probability = 0.15, random_seed_value = None ):
+def run_optimised_solution( distance_matrix, demands, vehicle_capacity, population_size = 80, total_generations = 300, crossover_probability = 0.85, mutation_probability = 0.15, random_seed_value = None ):
     # Input Validation
     if not distance_matrix or vehicle_capacity <= 0:
         logger.error("Invalid input: Distance matrix empty or capacity <= 0.")
@@ -27,7 +27,7 @@ def run_genetic_algorithm( distance_matrix, customer_demands, vehicle_capacity, 
 
     # Evaluate the fitness
     def evaluate_fitness(sequence):
-        routes = split(sequence, customer_demands, vehicle_capacity)
+        routes = split(sequence, demands, vehicle_capacity)
         return total_distance(routes, distance_matrix)
 
     # Initialise the Population with random customer permutations
@@ -47,19 +47,19 @@ def run_genetic_algorithm( distance_matrix, customer_demands, vehicle_capacity, 
             parent_alpha = best(population_list, evaluate_fitness)
             parent_beta = best(population_list, evaluate_fitness)
 
-        # Produce offspring based on probability
-        if random.random() < crossover_probability:
-            child_alpha, child_beta = crossover(parent_alpha, parent_beta)
-        else:
-            child_alpha, child_beta = parent_alpha[:], parent_beta[:]
-
-        # Introduce random changes to explore the solution space
-        if random.random() < mutation_probability:
-            child_alpha = swap(child_alpha)
-        if random.random() < mutation_probability:
-            child_beta = swap(child_beta)
-
-        new_population_list.extend([child_alpha, child_beta])
+            # Produce offspring based on probability
+            if random.random() < crossover_probability:
+                child_alpha, child_beta = crossover(parent_alpha, parent_beta)
+            else:
+                child_alpha, child_beta = parent_alpha[:], parent_beta[:]
+    
+            # Introduce random changes to explore the solution space
+            if random.random() < mutation_probability:
+                child_alpha = swap(child_alpha)
+            if random.random() < mutation_probability:
+                child_beta = swap(child_beta)
+    
+            new_population_list.extend([child_alpha, child_beta])
 
         # Update population
         population_list = new_population_list[:population_size]
@@ -73,13 +73,13 @@ def run_genetic_algorithm( distance_matrix, customer_demands, vehicle_capacity, 
             best_overall_sequence = current_generation_best[:]
 
     # Convert the best permutation into actual vehicle routes
-    final_decoded_routes = split(best_overall_sequence, customer_demands, vehicle_capacity)
+    final_decoded_routes = split(best_overall_sequence, demands, vehicle_capacity)
 
     # Apply local search
     refined_routes = [search(route, distance_matrix) for route in final_decoded_routes]
 
     # Apply inter-route relocate to further reduce the total distance
-    final_optimized_routes = relocation( refined_routes, distance_matrix, customer_demands, vehicle_capacity)
+    final_optimized_routes = relocation( refined_routes, distance_matrix, demands, vehicle_capacity)
 
     final_distance_result = total_distance(final_optimized_routes, distance_matrix)
 

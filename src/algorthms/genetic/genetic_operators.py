@@ -110,10 +110,10 @@ def search(individual_route, distance_matrix):
                 potential_cost = distance_matrix[current_best_route[i - 1]][current_best_route[j]] + \
                                 distance_matrix[current_best_route[i]][current_best_route[j + 1]]
 
-            if potential_cost < current_cost - 1e-9:
-                # reverse the segment
-                current_best_route[i:j + 1] = current_best_route[i:j + 1][::-1]
-                was_improved = True
+                if potential_cost < current_cost - 1e-9:
+                    # reverse the segment
+                    current_best_route[i:j + 1] = current_best_route[i:j + 1][::-1]
+                    was_improved = True
 
     return current_best_route
 
