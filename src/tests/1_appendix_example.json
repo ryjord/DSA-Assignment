@@ -1,5 +1,5 @@
 {
-  "label": "Bakery example from coursework appendix",
+  "label": "coursework appendix example",
   "description": "Bakery example from coursework appendix — 6 customers, 3 vehicles, capacity 5",
   "vehicle_capacity": 5,
   "num_vehicles": 3,

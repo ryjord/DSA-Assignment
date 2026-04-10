@@ -1,6 +1,5 @@
 {
-  "label": "20 customers, 6 vehicles, capacity 10",
-  "description": "20 customers, 6 vehicles, capacity 10",
+  "label": "customers: 20, vehicles: 6, capacity: 10",
   "vehicle_capacity": 10,
   "num_vehicles": 6,
   "demands": [ 0, 2, 3, 2, 2, 3, 2, 3, 1, 2, 3, 3, 2, 3, 2, 3, 3, 3, 1, 2, 3 ],
