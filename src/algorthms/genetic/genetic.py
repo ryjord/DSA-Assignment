@@ -10,9 +10,18 @@ logging.basicConfig(level = logging.INFO, format = "%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 # Meta Heuritstic approach
-def run_optimised_solution( distance_matrix, demands, vehicle_capacity, population_size = 80, total_generations = 300, crossover_probability = 0.85, mutation_probability = 0.15, random_seed_value = None ):
+def run_optimised_solution(
+    distance_matrix,
+    demands,
+    vehicle_capacity,
+    population_size=80,
+    total_generations=300,
+    crossover_probability=0.85,
+    mutation_probability=0.15,
+    random_seed_value=None,
+):
     # Input Validation
-    if not distance_matrix or vehicle_capacity <= 0:
+    if len(distance_matrix) == 0 or vehicle_capacity <= 0:
         logger.error("Invalid input: Distance matrix empty or capacity <= 0.")
         return { "routes": [], "total_distance": 0.0 }
 
@@ -26,9 +35,13 @@ def run_optimised_solution( distance_matrix, demands, vehicle_capacity, populati
     customer_id_list = list(range(1, number_of_customers + 1))
 
     # Evaluate the fitness
+    fitness_cache = {}
     def evaluate_fitness(sequence):
-        routes = split(sequence, demands, vehicle_capacity)
-        return total_distance(routes, distance_matrix)
+        cache_key = tuple(sequence)
+        if cache_key not in fitness_cache:
+            routes = split(sequence, demands, vehicle_capacity)
+            fitness_cache[cache_key] = total_distance(routes, distance_matrix)
+        return fitness_cache[cache_key]
 
     # Initialise the Population with random customer permutations
     population_list = [random_permutation(customer_id_list) for _ in range(population_size)]

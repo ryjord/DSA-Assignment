@@ -11,7 +11,7 @@ from test import interactive_cli
 
 # Algorithms
 from algorthms.clarke.clarke import run_naive_solution
-from algorthms.branch.branch import run_ai_solution
+from algorthms.nearest.nearest import run_ai_solution
 from algorthms.genetic.genetic import run_optimised_solution
 
 # Builds Default Instance
