@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 # Runs Naive Solution
 def run_naive_solution(distance_matrix, demands, vehicle_capacity):
     # Prevent errors with empty data
-    if not distance_matrix or vehicle_capacity <= 0:
+    if len(distance_matrix) == 0 or vehicle_capacity <= 0:
         logger.error("Invalid input: Distance matrix empty or capacity <= 0.")
         return { "routes": [], "total_distance": 0.0 }
 
@@ -25,14 +25,28 @@ def run_naive_solution(distance_matrix, demands, vehicle_capacity):
     savings_list = savings(distance_matrix)
 
     # Start with the star configurations
-    routes_list, customer_to_route_mapping, route_demand_tracker = setup_routes( number_of_nodes, demands )
+    routes_list, customer_to_route_index, route_vehicles = setup_routes(
+        number_of_nodes, demands, vehicle_capacity
+    )
 
     # Iterate through the savings list and greedily merge routes
     for savings_value, customer_i, customer_j in savings_list:
-        merge_routes( customer_i, customer_j, routes_list, customer_to_route_mapping, route_demand_tracker, vehicle_capacity)
+        merge_routes(
+            customer_i,
+            customer_j,
+            routes_list,
+            customer_to_route_index,
+            route_vehicles,
+            vehicle_capacity,
+            demands,
+        )
 
-    # Finalise the routes
-    final_routes_list = [[0] + individual_route + [0] for individual_route in routes_list]
+    # Filter out routes that were cleared during merges, then wrap with depot nodes
+    final_routes_list = [
+        [0] + individual_route + [0]
+        for individual_route in routes_list
+        if len(individual_route) > 0
+    ]
 
     # Calculate the final objective value
     total_travel_distance = total_distance(final_routes_list, distance_matrix)
