@@ -76,6 +76,7 @@ def interactive_cli(bakery_builder, solver):
 
                 print("\n>> All tests completed!")
 
+            # V Visualise
             case 'V':
                 print("\n" + "=" * 80)
                 print("  Generating Visualisations for ALL tests...")

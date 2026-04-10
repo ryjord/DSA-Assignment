@@ -67,8 +67,8 @@ def _solve_instance(instance: VRPInstance, label: str = "", output_dir: str = "o
         print(f"{'#' * 65}")
 
     solutions = {}
-    for solver_label, solver_fn in solvers.items():
-        sol = solver_fn(instance.distance_matrix, instance.demands, instance.vehicle_capacity)
+    for solver_label, solver_names in solvers.items():
+        sol = solver_names(instance.distance_matrix, instance.demands, instance.vehicle_capacity)
         solutions[solver_label] = sol
         if not hide_details:
             print_solution(sol, label=solver_label)

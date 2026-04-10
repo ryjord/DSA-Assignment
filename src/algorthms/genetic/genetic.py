@@ -52,13 +52,13 @@ def run_optimised_solution( distance_matrix, demands, vehicle_capacity, populati
                 child_alpha, child_beta = crossover(parent_alpha, parent_beta)
             else:
                 child_alpha, child_beta = parent_alpha[:], parent_beta[:]
-    
+
             # Introduce random changes to explore the solution space
             if random.random() < mutation_probability:
                 child_alpha = swap(child_alpha)
             if random.random() < mutation_probability:
                 child_beta = swap(child_beta)
-    
+
             new_population_list.extend([child_alpha, child_beta])
 
         # Update population
@@ -79,10 +79,10 @@ def run_optimised_solution( distance_matrix, demands, vehicle_capacity, populati
     refined_routes = [search(route, distance_matrix) for route in final_decoded_routes]
 
     # Apply inter-route relocate to further reduce the total distance
-    final_optimized_routes = relocation( refined_routes, distance_matrix, demands, vehicle_capacity)
+    final_optimised_routes = relocation( refined_routes, distance_matrix, demands, vehicle_capacity)
 
-    final_distance_result = total_distance(final_optimized_routes, distance_matrix)
+    final_distance_result = total_distance(final_optimised_routes, distance_matrix)
 
     logger.debug(f"Genetic Algorithm Completed. Best distance: {final_distance_result:.4f}")
 
-    return { "routes": final_optimized_routes, "total_distance": final_distance_result}
+    return { "routes": final_optimised_routes, "total_distance": final_distance_result}

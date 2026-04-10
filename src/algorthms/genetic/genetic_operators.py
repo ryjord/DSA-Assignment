@@ -62,7 +62,7 @@ def crossover(parent_alpha, parent_beta):
     start_index, end_index = sorted(random.sample(range(sequence_size), 2))
 
     def generate_child(primary_parent, secondary_parent):
-        # Initialize child
+        # Initialise child
         child_sequence = [None] * sequence_size
         # Copy the selected segment from the first parent
         child_sequence[start_index:end_index + 1] = primary_parent[start_index:end_index + 1]
