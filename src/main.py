@@ -1,22 +1,28 @@
 # Libs
-import sys
 import os
-import glob
 
 # Classes
 from classes.models import Customer, VRPInstance
 
 # Utils
-from utils.core_utils import load_test_case, print_solution
-from utils.benchmarking import run_benchmark, print_benchmark_table
-from utils.visualisation import plot_solution
+from utils.helpers import (
+    load_test_case,
+    print_solution,
+    run_benchmark,
+    print_benchmark_table,
+    plot_solution
+)
 
 # Algorithms
 from algorthms.clarke.clarke import run_naive_solution
 from algorthms.branch.branch import run_ai_solution
 from algorthms.genetic.genetic import run_optimised_solution
 
+# CLI
+from test import interactive_cli
 
+
+# Builds the default Bakery example instance if no file is provided
 def _build_bakery_instance() -> VRPInstance:
     demands = [0, 2, 3, 1, 4, 2, 3]
     customers = [Customer(i, demands[i]) for i in range(7)]
@@ -44,7 +50,8 @@ def _build_bakery_instance() -> VRPInstance:
     )
 
 
-def _solve_instance(instance: VRPInstance, label: str = "", output_dir: str = "outputs") -> None:
+# Solves a given VRP instance using all available algorithms and benchmarks them
+def _solve_instance(instance: VRPInstance, label: str = "", output_dir: str = "outputs", hide_details: bool = False) -> None:
     os.makedirs(output_dir, exist_ok=True)
 
     solvers = {
@@ -53,52 +60,44 @@ def _solve_instance(instance: VRPInstance, label: str = "", output_dir: str = "o
         "Genetic Algorithm (Optimised)": run_optimised_solution,
     }
 
-    print(f"\n{'#' * 65}")
-    print(f"  Instance: {label or 'Unknown'}")
-    print(f"  Customers: {instance.num_customers}  |  Capacity: {instance.vehicle_capacity}")
-    print(f"{'#' * 65}")
+    if not hide_details:
+        print(f"\n{'#' * 65}")
+        print(f"  Instance: {label or 'Unknown'}")
+        print(f"  Customers: {instance.num_customers}  |  Capacity: {instance.vehicle_capacity}")
+        print(f"{'#' * 65}")
 
     solutions = {}
     for solver_label, solver_fn in solvers.items():
         sol = solver_fn(instance.distance_matrix, instance.demands, instance.vehicle_capacity)
         solutions[solver_label] = sol
-        print_solution(sol, label=solver_label)
+        if not hide_details:
+            print_solution(sol, label=solver_label)
 
     results = run_benchmark(solvers, instance, runs=5)
+    
+    if hide_details:
+        print(f"\n>> {label} Results:")
     print_benchmark_table(results)
 
-    for solver_label, sol in solutions.items():
-        safe_name = (
-            f"{(label or 'instance').replace(' ', '_')}__"
-            f"{solver_label.replace(' ', '_').replace('/', '-')}.png"
-        )
-        plot_solution(
-            sol,
-            instance,
-            title=f"{label} — {solver_label}",
-            output_path=os.path.join(output_dir, safe_name),
-        )
+    # When hiding details (like running mass tests), we also skip visualisations to run fast
+    if not hide_details:
+        for solver_label, sol in solutions.items():
+            safe_name = (
+                f"{(label or 'instance').replace(' ', '_')}__"
+                f"{solver_label.replace(' ', '_').replace('/', '-')}.png"
+            )
+            plot_solution(
+                sol,
+                instance,
+                title=f"{label} — {solver_label}",
+                output_path=os.path.join(output_dir, safe_name),
+            )
 
 
+# Main Application Entry Point
 def main():
-    args = sys.argv[1:]
-
-    if "--all" in args:
-        test_files = sorted(glob.glob("tests/*.json"))
-        for filepath in test_files:
-            instance = load_test_case(filepath)
-            if instance is not None:
-                _solve_instance(instance, label=os.path.basename(filepath))
-        return
-
-    if args and not args[0].startswith("--"):
-        instance = load_test_case(args[0])
-        if instance:
-            _solve_instance(instance, label=os.path.basename(args[0]))
-        return
-
-    instance = _build_bakery_instance()
-    _solve_instance(instance, label="Bakery Example")
+    # Pass the execution functions to the isolated CLI to prevent cyclical imports
+    interactive_cli(_build_bakery_instance, _solve_instance)
 
 
 if __name__ == "__main__":

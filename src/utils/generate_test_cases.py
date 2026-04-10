@@ -1,7 +1,11 @@
+# Libs
 import json
 import random
 import math
 
+# --- Methods ---
+
+# Generates a JSON test file containing a complex CVRP scenario
 def generate_complex_test(filename, num_customers, vehicle_capacity, distribution_type="clustered"):
   # Customer 0 is the depot
   customers = [{"id": 0, "x": 50, "y": 50, "demand": 0}]
@@ -47,9 +51,14 @@ def generate_complex_test(filename, num_customers, vehicle_capacity, distributio
     json.dump(test_data, f, indent=2)
   print(f"Generated {filename}")
 
-# Create two super complex tests
-# 1. Stress Test: Large scale, random distribution
-generate_complex_test("tc_06_stress_100cust.json", 100, 40, "random")
 
-# 2. Hard Test: Clustered distribution with tight capacity
-generate_complex_test("tc_07_clustered_120cust.json", 120, 30, "clustered")
+# --- Execution ---
+
+if __name__ == "__main__":
+  # Create two super complex tests
+  
+  # 1. Stress Test: Large scale, random distribution
+  generate_complex_test("tc_06_stress_100cust.json", 100, 40, "random")
+
+  # 2. Hard Test: Clustered distribution with tight capacity
+  generate_complex_test("tc_07_clustered_120cust.json", 120, 30, "clustered")
