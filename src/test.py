@@ -7,7 +7,7 @@ import json
 from utils.helpers import load_test_case
 
 # Interactive CLI Runner
-def interactive_cli(bakery_builder, solver):
+def interactive_cli(bakery_builder, Algorithm):
     # Determine the base directory
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -64,7 +64,7 @@ def interactive_cli(bakery_builder, solver):
 
                 # Run Default Main
                 bakery_instance = bakery_builder()
-                solver(bakery_instance, label="Bakery Example", hide_details=True)
+                Algorithm(bakery_instance, label="Bakery Example", hide_details=True)
 
                 # Run Filecases
                 for filepath, label in tests:
@@ -72,7 +72,7 @@ def interactive_cli(bakery_builder, solver):
 
                     # Ensure loaded
                     if instance is not None:
-                        solver(instance, label=label, hide_details=True)
+                        Algorithm(instance, label=label, hide_details=True)
 
                 print("\n>> All tests completed!")
 
@@ -82,17 +82,17 @@ def interactive_cli(bakery_builder, solver):
                 print("  Generating Visualisations for ALL tests...")
                 print("=" * 80)
                 bakery_instance = bakery_builder()
-                solver(bakery_instance, label="Bakery Example", hide_details=False)
+                Algorithm(bakery_instance, label="Bakery Example", hide_details=False)
                 for filepath, label in tests:
                     instance = load_test_case(filepath)
                     if instance is not None:
-                        solver(instance, label=label, hide_details=False)
+                        Algorithm(instance, label=label, hide_details=False)
                 print("\n>> All visualisations generated and saved!")
 
             # 0 Default
             case '0':
                 bakery_instance = bakery_builder()
-                solver(bakery_instance, label="Bakery Example")
+                Algorithm(bakery_instance, label="Bakery Example")
 
             # Other Cases
             case _:
@@ -106,7 +106,7 @@ def interactive_cli(bakery_builder, solver):
 
                         # Ensure Loaded Again (Note : i could probably isolate this to call these checks once)
                         if instance is not None:
-                            solver(instance, label=label)
+                            Algorithm(instance, label=label)
                     else:
                         print("Invalid option. Please enter a valid number.")
                 except Exception as error:

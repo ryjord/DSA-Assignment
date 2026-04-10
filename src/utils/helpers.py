@@ -5,7 +5,6 @@ import math
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib
-matplotlib.use("Agg")
 
 # Classes
 from classes.models import Customer, VRPInstance
@@ -109,24 +108,24 @@ def print_solution(solution: dict, label: str = "Solution") -> None:
     print(f"{'=' * 60}\n")
 
 # Benchmarks multiple algorithms
-def run_benchmark(solvers: dict, instance, runs: int = 1) -> list:
+def run_benchmark(Algorithms: dict, instance, runs: int = 1) -> list:
     # Initialise
     results = []
     dm = instance.distance_matrix
     demands = instance.demands
     cap = instance.vehicle_capacity
 
-    # Solvers Iterated
-    for label, solver_names in solvers.items():
+    # Algorithms Iterated
+    for label, Algorithm_names in Algorithms.items():
         best_distance = math.inf
         best_solution = None
         total_time = 0.0
 
-        # Indexed Solver Runs
+        # Indexed Algorithm Runs
         for _ in range(runs):
             # counter
             start_time = time.perf_counter()
-            solution = solver_names(dm, demands, cap)
+            solution = Algorithm_names(dm, demands, cap)
             end_time = time.perf_counter()
 
             # Total
@@ -141,7 +140,7 @@ def run_benchmark(solvers: dict, instance, runs: int = 1) -> list:
         validity = validate_solution(best_solution, demands, cap, instance.num_customers)
 
         results.append({
-            "solver": label,
+            "Algorithm": label,
             "distance": round(best_distance, 4),
             "time_ms": round(total_time / runs, 3),
             "routes": len(best_solution["routes"]),
@@ -157,12 +156,13 @@ def run_benchmark(solvers: dict, instance, runs: int = 1) -> list:
             run["gap"] = (distance - best_overall) / best_overall * 100
         else:
             run["gap"] = 0.0
+    return results
 
 # benchmark results
 def print_benchmark_table(results: list) -> None:
 
     header = (
-        f"{'Solver':<30} {'Distance':>12} {'Gap (%)':>10} "
+        f"{'Algorithm':<30} {'Distance':>12} {'Gap (%)':>10} "
         f"{'Time (ms)':>12} {'Routes':>8} {'Valid':>7}"
     )
 
@@ -174,9 +174,9 @@ def print_benchmark_table(results: list) -> None:
 
     # Loops through results and checks validity
     for result in results:
-        valid_str = "✓" if results["valid"] else "✗"
+        valid_str = "✓" if result["valid"] else "✗"
         print(
-            f" {result['solver']:<30} {result['distance']:>12.4f} {result['gap']:>10.2f} "
+            f" {result['Algorithm']:<30} {result['distance']:>12.4f} {result['gap']:>10.2f} "
             f" {result['time_ms']:>12.3f} {result['routes']:>8} {valid_str:>7}"
         )
 
