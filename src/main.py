@@ -58,7 +58,7 @@ def _solve_instance(instance: VRPInstance, label: str = "", output_dir: str = "o
     Algorithms = {
         "Clarke-Wright (Naive)": run_naive_solution,
         "Nearest Neighbour + 2-opt (AI)": run_ai_solution,
-        "Genetic Algorithm (Optimised)": run_optimised_solution,
+        "Genetic Algorithm": run_optimised_solution,
     }
 
     # Render the block header
