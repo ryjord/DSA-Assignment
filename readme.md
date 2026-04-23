@@ -1,79 +1,167 @@
-# Algorithm Development Portfolio: Capacitated Vehicle Routing Problem (CVRP)
 
-## 1. Problem Definition & Literature Review
+## Vehicle Routing Problem: DSA Assignment
+**Data Structures Assignment Deadline:** Tuesday 5 May 2026
 
-The Capacitated Vehicle Routing Problem (CVRP) is an NP-hard combinatorial optimisation problem. The objective is to design optimal delivery routes for a fleet of homogeneous vehicles originating from a single depot to serve a set of customers with known demands.
+## Overview
+This Project compares the implementation of 3 algorithms against the **Vehicle Routing Problem (VRP)** with varying stressed benchmarks:
 
-Let $G = (V, E)$ be a complete graph where $V = \{0, 1, ..., n\}$ is the set of vertices (with $0$ representing the depot) and $E$ is the set of edges.
-The objective function is to minimise the total travel distance:
-$$\min \sum_{i=0}^{n} \sum_{j=0}^{n} d_{ij} x_{ij}$$
-Where $d_{ij}$ is the distance between node $i$ and node $j$, and $x_{ij} \in \{0,1\}$ indicates if the edge is traversed.
+| # | Algorithm | Type |
 
-**Constraints:**
+| --- | -------------------------------------- | ---------------------------------- |
 
-1. Each customer is visited exactly once by one vehicle.
-2. The total demand of a route cannot exceed the vehicle capacity ($C$): $\sum_{i \in Route} demand_i \le C$.
-3. Every route must start and terminate at the depot (node $0$).
+| 1 | Clarke-Wright Savings | Heuristic (Naive) |
+| 2 | Nearest Neighbour + 2-opt | AI Generated Greedy + Local Search |
+| 3 | Genetic Algorithm + 2-opt + Relocation | Metaheuristic (Optimised) |
 
-_Literature:_ Dantzig and Ramser (1959) first introduced the VRP. Given its NP-hard nature, exact Algorithms are computationally expensive for large datasets, making heuristic and metaheuristic approaches (like Genetic Algorithms and Local Search) the industry standard for scalable solutions.
+**Contraints**
+- Bakery depot delivering to multiple cafés using a fleet of identical vans.
+- Each route must start and end at the depot.
+- Every customer must be visited exactly once.
+- No vehicle may exceed its capacity.
+
+## Data Structures
+| Structure | Class / Type | Purpose |
+
+| ---------------- | ------------------- | ---------------------------------------------------------------------------- |
+
+| Customer node | `Customer` | Stores `customer_id`, `demand`, `x_coordinate`, `y_coordinate` |
+| Vehicle | `Vehicle` | Tracks `current_load` vs `max_capacity`; enforces capacity via `can_carry()` |
+| Problem instance | `VRPInstance` | Wraps customers, distance matrix, vehicle capacity, num_vehicles |
+| Distance matrix | `list[list[float]]` | n×n adjacency matrix; index `0` = depot |
+| Routes | `list[list[int]]` | Each route is a list of node IDs starting and ending at `0` |
+| Savings list | `list[tuple]` | Sorted `(savings_value, i, j)` triples used by Clarke-Wright |
+| Population | `list[list[int]]` | Flat customer permutations evolved by the Genetic Algorithm |
+
+---
+## Algorithms
+**1. Clarke-Wright** - Naive Approach
+**File:**  `algorthms/clarke/`
+This approach starts with every customer on a dedicated route calculates the saving from merging any two routes. Savings are sorted descending and then greedily applied, The validity is tested when:
+  
+- Customer `i` is at the **end** of its route and customer `j` is at the **start**
+- The combined demand doesnt exceed the vehicle capacity, `Vehicle.can_carry()`
+Implements enhanced endpoint merging as described by Stanojević, Stanojević & Vujošević (2013).
+
+---
+**2. Nearest Neighbour + 2-opt** - AI-Generated Solution
+**File:**  `algorthms/nearest/nearest.py`
+
+>  **This solution was generated with the assistance of AI, Anthropic & Gemini.**
+> The exact prompt used is included in the file header of `nearest.py`.
+
+**Phase 1 — Generation:** Attached content of existing code to Gemini and provided context on what the code does and what the assignment requires from the AI generated solution.
+**Phase 2 — Improvement:** After the AI model was implemented, the use of Anthropic is utilised to help debug and apply the code of Nearest to correctly utilise the classes and methods of VRPInstance.
+**Phase 3 — Cleanup:** Utilised AI once more to modify minor changes when updated external code
 
 ---
 
-## 2. Data Structures Justification
+**3. Genetic Algorithm + 2-opt + Relocation** - Optimised Approach
+**File:**  `algorthms/genetic/`
+A population control implementation, which requires changing the customers permutations by using the fitness functions to determine the best possible routes.
 
-Careful selection of data structures was paramount to ensure efficient computation and memory management:
+**Key components:**
+| Component | Implementation | Notes |
 
-- **`Customer` Object with `__slots__`:** Python dictionaries have significant memory overhead. Using `__slots__` prevents the dynamic creation of `__dict__` attributes, heavily reducing the memory footprint, which is critical when scaling to thousands of customers.
-- **Distance Matrix (2D Array):** A dense $n \times n$ array provides $O(1)$ lookups for edge costs, which is heavily utilized in millions of fitness evaluations during the Genetic Algorithm.
-- **Routes as Python Lists:** Individual routes are stored as contiguous arrays (lists). This allows for $O(1)$ amortized appending during route construction and rapid slicing operations required for the 2-opt algorithms.
+| -------------- | --------------------------------------- | ------------------------------------------------- |
+
+| Initialisation | `random_permutation()` | Random shuffles of all customer IDs |
+
+| Fitness | `total_distance()` on `split()` routes | Cached via dict for performance |
+
+| Selection | Tournament selection (`best()`, size=3) | Avoids fitness-proportionate bias |
+
+| Crossover | Order Crossover / OX (`crossover()`) | Preserves relative order; 85% probability |
+
+| Mutation | Swap mutation (`swap()`) | Randomly exchanges two positions; 15% probability |
+
+| Elitism | Best individual carried forward | Prevents regression between generations |
+
+| Local search | `search()` — intra-route 2-opt | Applied post-evolution to each route |
+
+| Inter-route | `relocation()` — customer relocation | Moves customers between routes if beneficial |
+ 
+**Default parameters:**
+- population = 80
+- generations = 300
+  
+---
+## How to Run
+
+**Requirements**
+```bash
+pip  install  matplotlib
+```  
+Python 3.10+ is required
+
+**Run through CLI**
+```bash
+python  main.py
+```
+**Prompting**
+Upon running the program will ask you this
+```
+========================================
+VRP Algorithm Tester
+========================================
+[1] Bakery Example (Assignment Brief)
+[2] Small — 10 Customers
+[3] Medium — 20 Customers
+**(and so on)**
+...
+----------------------------------------
+[A] Run All Tests (Comparison Mode)
+[V] Visualise All Tests
+[Q] Quit
+========================================
+```
+using keyboard enter characters seen in '[x]'.
+-  **Numbers** to run all three algorithms on that test case and see routes + benchmark table.
+-  **[A]** runs every test case in bulk and prints a comparison table for each.
+-  **[V]** runs every test case and saves route visualisation PNGs to `outputs/`. As coordinates are estimated all points will surround the origin with no distance, but show a clear route.
+  
+**Output**
+Each run prints:
+- Route breakdown (e.g. `0 -> 3 -> 4 -> 0`)
+- Benchmark table: Distance | Gap (%) | Time (ms) | Routes | Valid ✓/✗
+Visualisation PNGs are saved to `outputs/` automatically when using `[V]`.
+---
+
+**Test Cases**
+All test inputs are JSON files in `tests/`. Each file follows this schema:
+
+```json
+{
+		"label": "Human-readable name",
+		"demands": [0, 2, 3, 1, 4, 2, 3],
+		"distance_matrix": [[0, 3, 5, ...], ...],
+		"vehicle_capacity": 5,
+		"num_vehicles": 3,
+		"coordinates": [[5,5], [2,7], ...]
+}
+```
+-  `demands[0]` is always the depot (demand = 0)
+-  `coordinates` is only used for graph visualisation `v` to convey routing on a graph. 
 
 ---
 
-## 3. Algorithmic Solutions
+## Solution Validation
+Every solution is automatically validated against all VRP constraints via `validate_solution()` in `helpers.py`:
 
-### 3.1 Initial / Naive Solution: Clarke-Wright Savings
+- Every route starts and ends at depot (`0`)
+- Depot does not appear mid-route
+- Every customer visited exactly once
+- Route demand does not exceed vehicle capacity
+Results are shown in the benchmark table as `Valid ✓` or `✗` with error details.
 
-The Clarke-Wright algorithm (1964) is a greedy constructive heuristic.
 
-- **Methodology:** It begins with a "star" configuration (every customer gets their own vehicle). It calculates the "savings" of merging two routes: $S(i,j) = d(0,i) + d(0,j) - d(i,j)$. Merges are executed greedily in descending order of savings, provided capacity constraints are respected.
-- **Complexity:** Time complexity is $O(n^2 \log n)$ due to the sorting of the savings list. Space complexity is $O(n^2)$ to store the distance matrix.
+## References
 
-### 3.2 AI-Generated Solution: Nearest Neighbour + 2-opt
+Clarke, G., & Wright, J. W. (1964). Scheduling of vehicles from a central depot to a number of delivery points. _Operations Research, 12_(4), 568–581.
 
-- **AI Tool Used:** Claude (Anthropic).
-- **Exact Prompt Used:** _"Implement a nearest-neighbour constructive heuristic for the Capacitated Vehicle Routing Problem in Python. After construction, apply a 2-opt intra-route improvement step to reduce the total travel distance. The function signature must be: run_ai_solution(distance_matrix, demands, vehicle_capacity) -> dict returning {'routes': list[list[int]], 'total_distance': float}."_
-- **Methodology:** A greedy $O(n^2)$ traversal selecting the closest unvisited, feasible node. It is followed by a 2-opt local search which iteratively uncrosses overlapping edges within a single route until a local minimum is reached.
+Nazif, H., & Lee, L. S. (2012). Optimised crossover genetic algorithm for capacitated vehicle routing problem. _Applied Mathematical Modelling, 36_(5), 2110–2117.
 
-### 3.3 Optimised Solution: Genetic Algorithm with Inter-Route Search
+Ozsoydan, F. B., & Sipahioglu, A. (2013). Heuristic solution approaches for the cumulative capacitated vehicle routing problem. _Optimization, 62_(10), 1321–1340.
 
-To achieve superior results, a Genetic Algorithm (metaheuristic) was engineered.
+Simensen, M., Hasle, G., & Stålhane, M. (2022). Combining hybrid genetic search with ruin-and-recreate for solving the capacitated vehicle routing problem. _Journal of Heuristics, 28_(5-6), 653–697.
 
-- **Methodology:** A population of customer permutations evolves over generations. It utilizes _Binary Tournament Selection_ to maintain genetic diversity and _Order Crossover (OX1)_ to breed valid offspring without requiring repair mechanisms.
-- **Novelty:** After decoding chromosomes into capacity-aware routes, the algorithm applies an advanced **Inter-Route Relocate** local search. This $O(R^2 \cdot L^2)$ operation attempts to extract a customer from one route and insert them into another, often escaping the local optima that traps standard 2-opt algorithms.
-
----
-
-## 4. Benchmarking and Comparative Analysis
-
-Solutions were benchmarked across instances of varying sizes (6 to 50 customers).
-
-| Algorithm                      | Distance | Gap (%) | Time (ms) | Routes | Valid |
-| :----------------------------- | :------- | :------ | :-------- | :----- | :---- |
-| Clarke-Wright (Naive)          | 36.0000  | 16.13   | 0.045     | 3      | ✓     |
-| Nearest Neighbour + 2-opt (AI) | 33.0000  | 6.45    | 0.061     | 3      | ✓     |
-| Genetic Algorithm (Optimised)  | 31.0000  | 0.00    | 85.102    | 3      | ✓     |
-
-_Table 1: Benchmark results on `tc_02_small_10cust.json`_
-
-**Analysis:**
-The Clarke-Wright solution provides a rapid $O(n^2 \log n)$ baseline but lacks refinement. The AI-generated Nearest Neighbour approach slightly improved the gap due to the 2-opt uncrossing, but heavily depends on the starting node. The Genetic Algorithm consistently achieved the global minimum (0.00% Gap). While computationally heavier, the trade-off of milliseconds for vastly superior logistical efficiency is optimal for real-world scenarios.
-
----
-
-## 5. Practical and Real-World Applications
-
-The CVRP algorithms implemented here directly translate to modern industry challenges:
-
-- **Last-Mile Delivery Logistics:** E-commerce giants use CVRP variants to distribute parcels, minimizing fleet fuel consumption and carbon emissions.
-- **Waste Collection:** Municipalities map bins as "customers" with demand volume, optimizing garbage truck routes to prevent overflowing while respecting vehicle tonnage limits.
-- **Public Transit Routing:** Ride-sharing systems dynamically group passengers (demand) into vans (capacity constraints) to optimize community travel times.
+Stanojević, M., Stanojević, B., & Vujošević, M. (2013). Enhanced savings calculation and its applications for solving capacitated vehicle routing problem. _Applied Mathematics and Computation, 219_(20), 10302–10312.
