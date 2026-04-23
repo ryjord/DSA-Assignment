@@ -1,11 +1,14 @@
 """
-    "Implement a nearest-neighbour constructive heuristic for the Capacitated
-    Vehicle Routing Problem in Python.  After construction, apply a 2-opt
-    intra-route improvement step to reduce the total travel distance.
-    The function signature must be:
-        run_ai_solution(distance_matrix, demands, vehicle_capacity) -> dict
-    returning {'routes': list[list[int]], 'total_distance': float}.
-    Attached is my other code, try follow the same consistency to ensure task work"
+    Gemini 3.1 Pro. Prompt:
+    "Hi, please implement a nearest neighbour approach for the
+    Vehicle Routing Problem in Python. im looking to apply a 2Opt search to improve the routes distance timing.
+    attached is some of my files which highlight the consistency im aiming for, please adopt the current classes utilised"
+
+    attached: [codebase & my report]
+
+    Claude 4.6 Sonnet Prompt:
+    "Hi, recently changed my implementation could you please ensure consistency, keep everything else consistent and the same as the last iteration,
+    just fix the minor issues im having regarding the change of implementation in classes and helper functions. found in the attached files.
 """
 
 """
