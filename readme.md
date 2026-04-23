@@ -1,4 +1,3 @@
-
 ## Vehicle Routing Problem: DSA Assignment
 **Data Structures Assignment Deadline:** Tuesday 5 May 2026
 
@@ -6,9 +5,7 @@
 This Project compares the implementation of 3 algorithms against the **Vehicle Routing Problem (VRP)** with varying stressed benchmarks:
 
 | # | Algorithm | Type |
-
 | --- | -------------------------------------- | ---------------------------------- |
-
 | 1 | Clarke-Wright Savings | Heuristic (Naive) |
 | 2 | Nearest Neighbour + 2-opt | AI Generated Greedy + Local Search |
 | 3 | Genetic Algorithm + 2-opt + Relocation | Metaheuristic (Optimised) |
@@ -21,9 +18,7 @@ This Project compares the implementation of 3 algorithms against the **Vehicle R
 
 ## Data Structures
 | Structure | Class / Type | Purpose |
-
 | ---------------- | ------------------- | ---------------------------------------------------------------------------- |
-
 | Customer node | `Customer` | Stores `customer_id`, `demand`, `x_coordinate`, `y_coordinate` |
 | Vehicle | `Vehicle` | Tracks `current_load` vs `max_capacity`; enforces capacity via `can_carry()` |
 | Problem instance | `VRPInstance` | Wraps customers, distance matrix, vehicle capacity, num_vehicles |
@@ -35,16 +30,16 @@ This Project compares the implementation of 3 algorithms against the **Vehicle R
 ---
 ## Algorithms
 **1. Clarke-Wright** - Naive Approach
-**File:**  `algorthms/clarke/`
+**File:** `algorthms/clarke/`
 This approach starts with every customer on a dedicated route calculates the saving from merging any two routes. Savings are sorted descending and then greedily applied, The validity is tested when:
-  
+
 - Customer `i` is at the **end** of its route and customer `j` is at the **start**
 - The combined demand doesnt exceed the vehicle capacity, `Vehicle.can_carry()`
 Implements enhanced endpoint merging as described by Stanojević, Stanojević & Vujošević (2013).
 
 ---
 **2. Nearest Neighbour + 2-opt** - AI-Generated Solution
-**File:**  `algorthms/nearest/nearest.py`
+**File:** `algorthms/nearest/nearest.py`
 
 >  **This solution was generated with the assistance of AI, Anthropic & Gemini.**
 > The exact prompt used is included in the file header of `nearest.py`.
@@ -56,41 +51,32 @@ Implements enhanced endpoint merging as described by Stanojević, Stanojević & 
 ---
 
 **3. Genetic Algorithm + 2-opt + Relocation** - Optimised Approach
-**File:**  `algorthms/genetic/`
+**File:** `algorthms/genetic/`
 A population control implementation, which requires changing the customers permutations by using the fitness functions to determine the best possible routes.
 
 **Key components:**
 | Component | Implementation | Notes |
-
 | -------------- | --------------------------------------- | ------------------------------------------------- |
-
 | Initialisation | `random_permutation()` | Random shuffles of all customer IDs |
-
 | Fitness | `total_distance()` on `split()` routes | Cached via dict for performance |
-
 | Selection | Tournament selection (`best()`, size=3) | Avoids fitness-proportionate bias |
-
 | Crossover | Order Crossover / OX (`crossover()`) | Preserves relative order; 85% probability |
-
 | Mutation | Swap mutation (`swap()`) | Randomly exchanges two positions; 15% probability |
-
 | Elitism | Best individual carried forward | Prevents regression between generations |
-
 | Local search | `search()` — intra-route 2-opt | Applied post-evolution to each route |
-
 | Inter-route | `relocation()` — customer relocation | Moves customers between routes if beneficial |
- 
+
 **Default parameters:**
 - population = 80
 - generations = 300
-  
+
 ---
 ## How to Run
 
 **Requirements**
 ```bash
 pip  install  matplotlib
-```  
+```
 Python 3.10+ is required
 
 **Run through CLI**
@@ -118,7 +104,7 @@ using keyboard enter characters seen in '[x]'.
 -  **Numbers** to run all three algorithms on that test case and see routes + benchmark table.
 -  **[A]** runs every test case in bulk and prints a comparison table for each.
 -  **[V]** runs every test case and saves route visualisation PNGs to `outputs/`. As coordinates are estimated all points will surround the origin with no distance, but show a clear route.
-  
+
 **Output**
 Each run prints:
 - Route breakdown (e.g. `0 -> 3 -> 4 -> 0`)
@@ -131,16 +117,16 @@ All test inputs are JSON files in `tests/`. Each file follows this schema:
 
 ```json
 {
-		"label": "Human-readable name",
-		"demands": [0, 2, 3, 1, 4, 2, 3],
-		"distance_matrix": [[0, 3, 5, ...], ...],
-		"vehicle_capacity": 5,
-		"num_vehicles": 3,
-		"coordinates": [[5,5], [2,7], ...]
+    "label": "Human-readable name",
+    "demands": [0, 2, 3, 1, 4, 2, 3],
+    "distance_matrix": [[0, 3, 5, ...], ...],
+    "vehicle_capacity": 5,
+    "num_vehicles": 3,
+    "coordinates": [[5,5], [2,7], ...]
 }
 ```
 -  `demands[0]` is always the depot (demand = 0)
--  `coordinates` is only used for graph visualisation `v` to convey routing on a graph. 
+-  `coordinates` is only used for graph visualisation `v` to convey routing on a graph.
 
 ---
 
