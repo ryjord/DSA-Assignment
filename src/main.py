@@ -6,7 +6,7 @@ import os
 from classes.models import Customer, VRPInstance
 
 # Utils
-from utils.helpers import print_solution, run_benchmark, print_benchmark_table, plot_solution
+from utils.helpers import print_solution, run_benchmark, print_benchmark_table, plot_solution, plot_comparative_analysis
 from test import interactive_cli
 
 # Algorithms
@@ -51,8 +51,10 @@ def _build_bakery_instance() -> VRPInstance:
 
 # Executes all algorithms
 def _solve_instance(instance: VRPInstance, label: str = "", output_dir: str = "outputs", hide_details: bool = False) -> None:
-    # Output directory
-    os.makedirs(output_dir, exist_ok=True)
+    routes_dir = os.path.join(output_dir, "routes")
+    comp_dir = os.path.join(output_dir, "comparative")
+    os.makedirs(routes_dir, exist_ok=True)
+    os.makedirs(comp_dir, exist_ok=True)
 
     # Algorithms
     Algorithms = {
@@ -82,10 +84,11 @@ def _solve_instance(instance: VRPInstance, label: str = "", output_dir: str = "o
     # Run benchmarking
     results = run_benchmark(Algorithms, instance, runs=5)
 
-    # Safety
+    # Safety & Comparative Chart
     if results is not None and not hide_details:
         print_benchmark_table(results)
 
+        plot_comparative_analysis(results, label, comp_dir)
     # Visualise Scatter plot
     for Algorithm_label, solution in solutions.items():
         safe_name = (
@@ -97,7 +100,7 @@ def _solve_instance(instance: VRPInstance, label: str = "", output_dir: str = "o
             solution,
             instance,
             title=f"{label} — {Algorithm_label}",
-            output_path=os.path.join(output_dir, safe_name),
+            output_path=os.path.join(routes_dir, safe_name)
         )
 
 # Run CLI

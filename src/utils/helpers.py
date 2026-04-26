@@ -5,6 +5,8 @@ import math
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib
+import numpy as np
+import os
 
 # Classes
 from classes.models import Customer, VRPInstance
@@ -239,3 +241,44 @@ def plot_solution(solution: dict, instance, title: str = "VRP Solution", output_
     plt.tight_layout()
     plt.savefig(output_path, dpi=150)
     plt.close(fig)
+
+def plot_comparative_analysis(results: list, label: str, output_dir: str = "outputs/comparative") -> None:
+    # Create directory
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Data Extractions
+    labels = list(map(lambda res: res['Algorithm'], results))
+    distances = list(map(lambda res: res['distance'], results))
+    times = list(map(lambda res: res['time_ms'], results))
+
+    x = np.arange(len(labels))
+    width = 0.35
+
+    fig, ax1 = plt.subplots(figsize=(10, 6))
+
+    # Distance Axis
+    color1 = 'tab:blue'
+    ax1.set_xlabel('Algorithms', fontweight='bold')
+    ax1.set_ylabel('Total Distance', color=color1, fontweight='bold')
+    ax1.bar(x - width/2, distances, width, label='Distance', color=color1)
+    ax1.tick_params(axis='y', labelcolor=color1)
+
+    # Time Axis
+    ax2 = ax1.twinx()
+    color2 = 'tab:red'
+    ax2.set_ylabel('Execution Time (ms) - Log Scale', color=color2, fontweight='bold')
+    ax2.bar(x + width/2, times, width, label='Time', color=color2)
+    ax2.tick_params(axis='y', labelcolor=color2)
+
+    # Scale
+    ax2.set_yscale('log')
+
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(labels, rotation=15, ha='right')
+
+    fig.tight_layout()
+    plt.title(f"Performance: Distance vs Execution Time ({label})")
+
+    safe_name = f"{(label or 'instance').replace(' ', '_')}__Comparative_Analysis.png"
+    plt.savefig(os.path.join(output_dir, safe_name))
+    plt.close()

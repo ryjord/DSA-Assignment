@@ -81,7 +81,7 @@ Python 3.10+ is required
 
 **Run through CLI**
 ```bash
-python  main.py
+python3  src/main.py
 ```
 **Prompting**
 Upon running the program will ask you this
