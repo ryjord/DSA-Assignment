@@ -11,6 +11,7 @@ def savings(distance_matrix):
     # Iterate through each pair of customers to find the best merge options
     for customer_1 in range(1, number_of_nodes):
         for customer_2 in range(customer_1 + 1, number_of_nodes):
+            # Check connection made
             savings_value = (
                 distance_matrix[0][customer_1] +
                 distance_matrix[0][customer_2] -
@@ -23,19 +24,18 @@ def savings(distance_matrix):
     return savings_list
 
 
-# Sets up the starting state where every customer has their own dedicated route.
+# Sets up the starting state
 def setup_routes(number_of_nodes, demands, vehicle_capacity):
     # Each customer begins on an individual route (star configuration)
     routes_list = [[index] for index in range(1, number_of_nodes)]
 
-    # Map each customer to their current route list for fast lookup
-
-    # Map each customer to their current route index for safe, stable lookup
+    # Map each customer to their current route index
     customer_to_route_index = {customer_id: customer_id - 1 for customer_id in range(1, number_of_nodes)}
 
-    # Build a Vehicle per route to track capacity explicitly
+    # Build a Vehicle per route
     route_vehicles = []
     for route in routes_list:
+        # New Vehicle
         vehicle = Vehicle(vehicle_id=len(route_vehicles), max_capacity=vehicle_capacity)
         vehicle.load(demands[route[0]])
         route_vehicles.append(vehicle)
@@ -53,6 +53,7 @@ def merge_routes(
     vehicle_capacity,
     demands,
 ):
+    # Find customer indexes
     index_i = customer_to_route_index.get(customer_i)
     index_j = customer_to_route_index.get(customer_j)
 
@@ -62,17 +63,18 @@ def merge_routes(
     if index_i == index_j:
         return
 
+    # Get the routes and vehicles associated with the customers
     route_i = routes_list[index_i]
     route_j = routes_list[index_j]
     vehicle_i = route_vehicles[index_i]
     vehicle_j = route_vehicles[index_j]
 
-    # A merge is only valid if the customers are at the connection endpoints
+    # Check if the merge is valid
     is_customer_i_at_end = route_i[-1] == customer_i
     is_customer_j_at_start = route_j[0] == customer_j
 
     if not (is_customer_i_at_end and is_customer_j_at_start):
-        # Check the reverse orientation
+        # Check the reverse
         is_customer_j_at_end = route_j[-1] == customer_j
         is_customer_i_at_start = route_i[0] == customer_i
 
@@ -84,19 +86,19 @@ def merge_routes(
         else:
             return
 
-    # Check if the combined demand exceeds the fixed vehicle capacity
+    # Check capacity
     if not vehicle_i.can_carry(vehicle_j.current_load):
         return
 
-    # Execute the merge
+    # Merge
     route_i.extend(route_j)
     vehicle_i.load(vehicle_j.current_load)
 
-    # Update mapping for all customers
+    # Update map
     for customer_node in route_j:
         customer_to_route_index[customer_node] = index_i
 
-    # remove the old route and update the demand tracker
+    # remove the old route
     route_j.clear()
     route_vehicles[index_j] = None
 
@@ -105,14 +107,14 @@ def merge_routes(
 def total_distance(routes_list, distance_matrix):
     total_travel_distance = 0.0
     for route in routes_list:
-        # Distance from depot to first customer
+        # Distance from depot to first node
         total_travel_distance += distance_matrix[0][route[0]]
 
-        # Distances between consecutive customers in the route
+        # Distances between nodes
         for edge_index in range(len(route) - 1):
             total_travel_distance += distance_matrix[route[edge_index]][route[edge_index + 1]]
 
-        # Distance from last customer back to depot
+        # Distance from last node to depot
         total_travel_distance += distance_matrix[route[-1]][0]
 
     return total_travel_distance

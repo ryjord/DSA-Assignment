@@ -14,14 +14,16 @@ from classes.models import Customer, VRPInstance
 # Load Test Case
 def load_test_case(filepath: str):
     try:
+        # Opening the JSON
         with open(filepath, "r") as test_cases:
             data = json.load(test_cases)
 
-        # Initialise
+        # Initialise
         demands = data["demands"]
         customers = []
 
-        # Load Customers & Assign Coordinates for visualisation (Note : ask lecturer if i need it to be visual, personally i think it helps my point)
+        # Load Customers & Assign Coordinates for visualisation
+        # Note : ask lecturer if i need it to be plotted
         for i, demand in enumerate(demands):
             cust = Customer(customer_id=i, demand=demand)
 
@@ -35,13 +37,14 @@ def load_test_case(filepath: str):
                     cust.x_coordinate = 50.0
                     cust.y_coordinate = 50.0
                 else:
-                    # Geometric Falback
+                    # Geometric Fallback
                     angle = (2 * math.pi * i) / (len(demands) - 1)
                     cust.x_coordinate = 50.0 + 40.0 * math.cos(angle)
                     cust.y_coordinate = 50.0 + 40.0 * math.sin(angle)
 
             customers.append(cust)
 
+        # Return VRP Instance
         return VRPInstance(
             customers=customers,
             distance_matrix=data["distance_matrix"],
@@ -51,11 +54,12 @@ def load_test_case(filepath: str):
 
     # Error Handling
     except (FileNotFoundError, json.JSONDecodeError, KeyError) as error:
-        print(f"[load_test_case] Failed to load '{filepath}': {error}")
+        print(f"[load_test_case] Unable to load '{filepath}': {error}")
         return None
 
-# Obeys VPR Constraint check
+# Obeys VPR Constraint Check
 def validate_solution(solution: dict, demands: list, vehicle_capacity: int, num_customers: int) -> dict:
+    # Initialise
     errors = []
     routes = solution.get("routes", [])
     visited = set()
@@ -79,6 +83,7 @@ def validate_solution(solution: dict, demands: list, vehicle_capacity: int, num_
             if node in visited:
                 errors.append(f"Route {index}: customer {node} visited more than once.")
 
+            # Add demand
             visited.add(node)
             route_demand += demands[node]
 
@@ -91,19 +96,22 @@ def validate_solution(solution: dict, demands: list, vehicle_capacity: int, num_
     if missing:
         errors.append(f"Unvisited customers: {sorted(missing)}.")
 
+    # Return the results
     return {"valid": len(errors) == 0, "errors": errors}
 
-# terminal solution
+# Prints Solution
 def print_solution(solution: dict, label: str = "Solution") -> None:
+    # Terminal Print
     print(f"\n{'=' * 60}")
     print(f"  {label}")
     print(f"{'=' * 60}")
 
+    # route path
     routes = solution.get("routes", [])
-    # Prints route path
     for i, route in enumerate(routes):
         print(f"  Route {i + 1:>2}: {' -> '.join(str(n) for n in route)}")
 
+    # total distance
     print(f"  {'─' * 40}")
     print(f"  Total distance: {solution.get('total_distance', 0):.4f}")
     print(f"  Number of routes: {len(routes)}")
@@ -119,6 +127,7 @@ def run_benchmark(Algorithms: dict, instance, runs: int = 1) -> list:
 
     # Algorithms Iterated
     for label, Algorithm_names in Algorithms.items():
+        # Best solution
         best_distance = math.inf
         best_solution = None
         total_time = 0.0
@@ -152,8 +161,10 @@ def run_benchmark(Algorithms: dict, instance, runs: int = 1) -> list:
     # Calculate the gap compared to the best algorithm
     best_overall = min(run.get("distance") for run in results)
 
+    # Gap calculations
     for run in results:
         distance = run.get("distance")
+
         if best_overall and best_overall > 0:
             run["gap"] = (distance - best_overall) / best_overall * 100
         else:
@@ -162,12 +173,13 @@ def run_benchmark(Algorithms: dict, instance, runs: int = 1) -> list:
 
 # benchmark results
 def print_benchmark_table(results: list) -> None:
-
+    # Headers
     header = (
         f"{'Algorithm':<30} {'Distance':>12} {'Gap (%)':>10} "
         f"{'Time (ms)':>12} {'Routes':>8} {'Valid':>7}"
     )
 
+    # Print table
     print("\n" + "=" * 85)
     print("  Benchmark Results")
     print("=" * 85)
@@ -184,8 +196,9 @@ def print_benchmark_table(results: list) -> None:
 
     print("=" * 85 + "\n")
 
-# Visualise
+# visual plots solution
 def plot_solution(solution: dict, instance, title: str = "VRP Solution", output_path: str = "solution.png") -> None:
+    # customers and routes
     customers = instance.customers
     routes = solution["routes"]
 
@@ -198,7 +211,10 @@ def plot_solution(solution: dict, instance, title: str = "VRP Solution", output_
 
     # Plot the routing paths
     for route_index, route in enumerate(routes):
+        # colours
         colour = colours[route_index % len(colours)]
+
+        # X,Y Coords
         xs = [customers[n].x_coordinate for n in route]
         ys = [customers[n].y_coordinate for n in route]
         ax.plot(xs, ys, "-o", color=colour, linewidth=1.5, markersize=5, zorder=2)
@@ -212,6 +228,7 @@ def plot_solution(solution: dict, instance, title: str = "VRP Solution", output_
 
     # Customer nodes and ID labels
     for customer in customers[1:]:
+        # Plot customer nodes
         ax.plot(customer.x_coordinate, customer.y_coordinate, "o", color="steelblue", markersize=8, zorder=3)
         # Annotates ID
         ax.annotate(
@@ -242,11 +259,12 @@ def plot_solution(solution: dict, instance, title: str = "VRP Solution", output_
     plt.savefig(output_path, dpi=150)
     plt.close(fig)
 
+# Benchmarking Graph Visualisation
 def plot_comparative_analysis(results: list, label: str, output_dir: str = "outputs/comparative") -> None:
     # Create directory
     os.makedirs(output_dir, exist_ok=True)
 
-    # Data Extractions
+    # Data Extraction
     labels = list(map(lambda res: res['Algorithm'], results))
     distances = list(map(lambda res: res['distance'], results))
     times = list(map(lambda res: res['time_ms'], results))
@@ -254,6 +272,7 @@ def plot_comparative_analysis(results: list, label: str, output_dir: str = "outp
     x = np.arange(len(labels))
     width = 0.35
 
+    # create figure and distance axis
     fig, ax1 = plt.subplots(figsize=(10, 6))
 
     # Distance Axis
@@ -273,12 +292,14 @@ def plot_comparative_analysis(results: list, label: str, output_dir: str = "outp
     # Scale
     ax2.set_yscale('log')
 
+    # format
     ax1.set_xticks(x)
     ax1.set_xticklabels(labels, rotation=15, ha='right')
 
     fig.tight_layout()
     plt.title(f"Performance: Distance vs Execution Time ({label})")
 
+    # Save the plot
     safe_name = f"{(label or 'instance').replace(' ', '_')}__Comparative_Analysis.png"
     plt.savefig(os.path.join(output_dir, safe_name))
     plt.close()

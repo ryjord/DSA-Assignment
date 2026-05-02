@@ -1,4 +1,8 @@
 """
+    Here is the prompt anything below this prompt was left undone byself, i have given AI full control on implementation of this
+    methodology and requested it take into consideration my current codebase and implementation for consistencies.
+
+
     Gemini 3.1 Pro. Prompt:
     "Hi, please implement a nearest neighbour approach for the
     Vehicle Routing Problem in Python. im looking to apply a 2Opt search to improve the routes distance timing.
@@ -11,6 +15,9 @@
     just fix the minor issues im having regarding the change of implementation in classes and helper functions. found in the attached files.
 """
 
+
+
+
 """
 Assumptions & limitations
 --------------------------
@@ -21,7 +28,7 @@ Assumptions & limitations
     (e.g. Or-opt) are not implemented.
 * No time-window constraints.
 """
-
+ 
 
 def run_ai_solution(distance_matrix: list, demands: list,
                     vehicle_capacity: int) -> dict:
@@ -30,13 +37,13 @@ def run_ai_solution(distance_matrix: list, demands: list,
 
     Parameters
     ----------
-    distance_matrix  : list[list[float]]  n×n cost matrix (index 0 = depot).
+    distance_matrix  : list[list[float]]  n×n cost matrix (index 0 = depot). 
     demands          : list[int]          demand[i] for location i.
     vehicle_capacity : int                Maximum load per vehicle.
 
     Returns
     -------
-    dict  {"routes": list[list[int]], "total_distance": float}
+    dict  {"routes": list[list[int]], "total_distance": float} 
     """
     # ------------------------------------------------------------------ #
     # Phase 1: Nearest Neighbour Construction

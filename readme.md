@@ -75,7 +75,7 @@ A population control implementation, which requires changing the customers permu
 
 **Requirements**
 ```bash
-pip  install  matplotlib
+pip  install  matplotlib numpy
 ```
 Python 3.10+ is required
 
@@ -138,16 +138,3 @@ Every solution is automatically validated against all VRP constraints via `valid
 - Every customer visited exactly once
 - Route demand does not exceed vehicle capacity
 Results are shown in the benchmark table as `Valid ✓` or `✗` with error details.
-
-
-## References
-
-Clarke, G., & Wright, J. W. (1964). Scheduling of vehicles from a central depot to a number of delivery points. _Operations Research, 12_(4), 568–581.
-
-Nazif, H., & Lee, L. S. (2012). Optimised crossover genetic algorithm for capacitated vehicle routing problem. _Applied Mathematical Modelling, 36_(5), 2110–2117.
-
-Ozsoydan, F. B., & Sipahioglu, A. (2013). Heuristic solution approaches for the cumulative capacitated vehicle routing problem. _Optimization, 62_(10), 1321–1340.
-
-Simensen, M., Hasle, G., & Stålhane, M. (2022). Combining hybrid genetic search with ruin-and-recreate for solving the capacitated vehicle routing problem. _Journal of Heuristics, 28_(5-6), 653–697.
-
-Stanojević, M., Stanojević, B., & Vujošević, M. (2013). Enhanced savings calculation and its applications for solving capacitated vehicle routing problem. _Applied Mathematics and Computation, 219_(20), 10302–10312.

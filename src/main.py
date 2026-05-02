@@ -14,8 +14,9 @@ from algorthms.clarke.clarke import run_naive_solution
 from algorthms.nearest.nearest import run_ai_solution
 from algorthms.genetic.genetic import run_optimised_solution
 
-# Builds Default Instance
+# Builds Instance
 def _build_bakery_instance() -> VRPInstance:
+    # node demands
     demands = [0, 2, 3, 1, 4, 2, 3]
     customers = []
 
@@ -23,7 +24,6 @@ def _build_bakery_instance() -> VRPInstance:
     for i in range(7):
         customers.append(Customer(customer_id=i, demand=demands[i]))
 
-    # Hardcoded coordinates
     coords = [(5, 5), (2, 7), (1, 4), (3, 2), (6, 1), (8, 3), (9, 6)]
 
     # Assign coordinates to customers
@@ -51,8 +51,11 @@ def _build_bakery_instance() -> VRPInstance:
 
 # Executes all algorithms
 def _solve_instance(instance: VRPInstance, label: str = "", output_dir: str = "outputs", hide_details: bool = False) -> None:
+    # Path to save results
     routes_dir = os.path.join(output_dir, "routes")
     comp_dir = os.path.join(output_dir, "comparative")
+
+    # Create dirs
     os.makedirs(routes_dir, exist_ok=True)
     os.makedirs(comp_dir, exist_ok=True)
 
@@ -71,31 +74,31 @@ def _solve_instance(instance: VRPInstance, label: str = "", output_dir: str = "o
         print(f"{'=' * 65}")
     solutions = {}
 
-    # Iterate Algorithms
+    # Execute Algorithms
     for Algorithm_label, Algorithm_name in Algorithms.items():
-        # Execute the algorithms
         solution = Algorithm_name(instance.distance_matrix, instance.demands, instance.vehicle_capacity)
         solutions[Algorithm_label] = solution
 
-        # Print route
+        # Store solution
         if not hide_details:
             print_solution(solution, label=Algorithm_label)
 
     # Run benchmarking
     results = run_benchmark(Algorithms, instance, runs=5)
 
-    # Safety & Comparative Chart
+    # Comparative Chart
     if results is not None and not hide_details:
         print_benchmark_table(results)
 
         plot_comparative_analysis(results, label, comp_dir)
-    # Visualise Scatter plot
+    # Visualise plot
     for Algorithm_label, solution in solutions.items():
         safe_name = (
             f"{(label or 'instance').replace(' ', '_')}__"
             f"{Algorithm_label.replace(' ', '_').replace('/', '-')}.png"
         )
 
+        # Store plot
         plot_solution(
             solution,
             instance,
@@ -103,7 +106,7 @@ def _solve_instance(instance: VRPInstance, label: str = "", output_dir: str = "o
             output_path=os.path.join(routes_dir, safe_name)
         )
 
-# Run CLI
+# Executes the CLI
 def main() -> None:
     try:
         interactive_cli(_build_bakery_instance, _solve_instance)
