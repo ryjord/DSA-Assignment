@@ -18,7 +18,7 @@ def run_optimised_solution(
     total_generations=300,
     crossover_probability=0.85,
     mutation_probability=0.15,
-    random_seed_value=None,
+    random_seed_value=None, # Seedless = random results, seeded = reproduceable results (try 100 for similar results to assignment video)
 ):
     # Input Validation
     if len(distance_matrix) == 0 or vehicle_capacity <= 0:
