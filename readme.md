@@ -28,25 +28,7 @@ This Project compares the implementation of 3 algorithms against the **Vehicle R
 | Population | `list[list[int]]` | Flat customer permutations evolved by the Genetic Algorithm |
 
 ---
-## Algorithms
-**1. Clarke-Wright** - Naive Approach
-**File:** `algorthms/clarke/`
 
----
-**2. Nearest Neighbour + 2-opt** - AI-Generated Solution
-**File:** `algorthms/nearest/nearest.py`
-
-
----
-
-**3. Genetic Algorithm + 2-opt + Relocation** - Optimised Approach
-**File:** `algorthms/genetic/`
-
-**Default parameters:**
-- population = 80
-- generations = 300
-
----
 ## How to Run
 
 **Requirements**
@@ -105,12 +87,3 @@ All test inputs are JSON files in `tests/`. Each file follows this schema:
 -  `coordinates` is only used for graph visualisation `v` to convey routing on a graph.
 
 ---
-
-## Solution Validation
-Every solution is automatically validated against all VRP constraints via `validate_solution()` in `helpers.py`:
-
-- Every route starts and ends at depot (`0`)
-- Depot does not appear mid-route
-- Every customer visited exactly once
-- Route demand does not exceed vehicle capacity
-Results are shown in the benchmark table as `Valid ✓` or `✗` with error details.
