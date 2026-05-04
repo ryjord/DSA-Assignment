@@ -4,14 +4,14 @@
 ## Overview
 This Project compares the implementation of 3 algorithms against the **Vehicle Routing Problem (VRP)** with varying stressed benchmarks:
 
-| # | Algorithm | Type |
+| | Algorithm | Type |
 | --- | -------------------------------------- | ---------------------------------- |
 | 1 | Clarke-Wright Savings | Heuristic (Naive) |
 | 2 | Nearest Neighbour + 2-opt | AI Generated Greedy + Local Search |
 | 3 | Genetic Algorithm + 2-opt + Relocation | Metaheuristic (Optimised) |
 
 **Contraints**
-- Bakery depot delivering to multiple cafés using a fleet of identical vans.
+- Bakery depot delivering to multiple customers using a fleet of identical vans.
 - Each route must start and end at the depot.
 - Every customer must be visited exactly once.
 - No vehicle may exceed its capacity.
@@ -31,40 +31,16 @@ This Project compares the implementation of 3 algorithms against the **Vehicle R
 ## Algorithms
 **1. Clarke-Wright** - Naive Approach
 **File:** `algorthms/clarke/`
-This approach starts with every customer on a dedicated route calculates the saving from merging any two routes. Savings are sorted descending and then greedily applied, The validity is tested when:
-
-- Customer `i` is at the **end** of its route and customer `j` is at the **start**
-- The combined demand doesnt exceed the vehicle capacity, `Vehicle.can_carry()`
-Implements enhanced endpoint merging as described by Stanojević, Stanojević & Vujošević (2013).
 
 ---
 **2. Nearest Neighbour + 2-opt** - AI-Generated Solution
 **File:** `algorthms/nearest/nearest.py`
 
->  **This solution was generated with the assistance of AI, Anthropic & Gemini.**
-> The exact prompt used is included in the file header of `nearest.py`.
-
-**Phase 1 — Generation:** Attached content of existing code to Gemini and provided context on what the code does and what the assignment requires from the AI generated solution.
-**Phase 2 — Improvement:** After the AI model was implemented, the use of Anthropic is utilised to help debug and apply the code of Nearest to correctly utilise the classes and methods of VRPInstance.
-**Phase 3 — Cleanup:** Utilised AI once more to modify minor changes when updated external code
 
 ---
 
 **3. Genetic Algorithm + 2-opt + Relocation** - Optimised Approach
 **File:** `algorthms/genetic/`
-A population control implementation, which requires changing the customers permutations by using the fitness functions to determine the best possible routes.
-
-**Key components:**
-| Component | Implementation | Notes |
-| -------------- | --------------------------------------- | ------------------------------------------------- |
-| Initialisation | `random_permutation()` | Random shuffles of all customer IDs |
-| Fitness | `total_distance()` on `split()` routes | Cached via dict for performance |
-| Selection | Tournament selection (`best()`, size=3) | Avoids fitness-proportionate bias |
-| Crossover | Order Crossover / OX (`crossover()`) | Preserves relative order; 85% probability |
-| Mutation | Swap mutation (`swap()`) | Randomly exchanges two positions; 15% probability |
-| Elitism | Best individual carried forward | Prevents regression between generations |
-| Local search | `search()` — intra-route 2-opt | Applied post-evolution to each route |
-| Inter-route | `relocation()` — customer relocation | Moves customers between routes if beneficial |
 
 **Default parameters:**
 - population = 80

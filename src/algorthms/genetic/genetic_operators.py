@@ -166,14 +166,10 @@ def relocation(routes_list, distance_matrix, customer_demands, vehicle_capacity)
 
                     for j in range(1, len(route_2)):
                         # Cost reduction if customer is removed from route 1
-                        removal_benefit = (distance_matrix[route_1[i - 1]][route_1[i]] +
-                                           distance_matrix[route_1[i]][route_1[i + 1]] -
-                                           distance_matrix[route_1[i - 1]][route_1[i + 1]])
+                        removal_benefit = (distance_matrix[route_1[i - 1]][route_1[i]] + distance_matrix[route_1[i]][route_1[i + 1]] - distance_matrix[route_1[i - 1]][route_1[i + 1]])
 
                         # Additional cost if customer is inserted into route 2
-                        insertion_cost = (distance_matrix[route_2[j - 1]][customer_to_move] +
-                                          distance_matrix[customer_to_move][route_2[j]] -
-                                          distance_matrix[route_2[j - 1]][route_2[j]])
+                        insertion_cost = (distance_matrix[route_2[j - 1]][customer_to_move] + distance_matrix[customer_to_move][route_2[j]] - distance_matrix[route_2[j - 1]][route_2[j]])
 
                         if insertion_cost < removal_benefit - 1e-9:
                             # Move customer from route 1 to route 2
