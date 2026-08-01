@@ -1,5 +1,6 @@
 # Libs
 import json
+import re
 import time
 import math
 import matplotlib.pyplot as plt
@@ -10,6 +11,10 @@ import os
 
 # Classes
 from classes.models import Customer, VRPInstance
+
+# Strips characters illegal in Windows filenames (: * ? " < > | \ /)
+def sanitize_filename(name: str) -> str:
+    return re.sub(r'[:*?"<>|\\/]', '', name)
 
 # Load Test Case
 def load_test_case(filepath: str):
@@ -300,6 +305,6 @@ def plot_comparative_analysis(results: list, label: str, output_dir: str = "outp
     plt.title(f"Performance: Distance vs Execution Time ({label})")
 
     # Save the plot
-    safe_name = f"{(label or 'instance').replace(' ', '_')}__Comparative_Analysis.png"
+    safe_name = sanitize_filename(f"{(label or 'instance').replace(' ', '_')}__Comparative_Analysis.png")
     plt.savefig(os.path.join(output_dir, safe_name))
     plt.close()

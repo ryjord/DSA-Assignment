@@ -1,8 +1,11 @@
-## Vehicle Routing Problem: DSA Assignment
-**Data Structures Assignment Deadline:** Tuesday 5 May 2026
+# VRP Solver — Vehicle Routing Problem Benchmark
+
+Compares three algorithmic approaches to the **Vehicle Routing Problem (VRP)** across benchmark instances ranging from a small worked example to a stressed 120-customer case.
+
+> Originally built for a Data Structures & Algorithms module assignment at Bournemouth University; published here as a standalone benchmarking tool.
 
 ## Overview
-This Project compares the implementation of 3 algorithms against the **Vehicle Routing Problem (VRP)** with varying stressed benchmarks:
+This project compares the implementation of 3 algorithms against the **Vehicle Routing Problem (VRP)** with varying stressed benchmarks:
 
 | | Algorithm | Type |
 | --- | -------------------------------------- | ---------------------------------- |
@@ -10,7 +13,7 @@ This Project compares the implementation of 3 algorithms against the **Vehicle R
 | 2 | Nearest Neighbour + 2-opt | AI Generated Greedy + Local Search |
 | 3 | Genetic Algorithm + 2-opt + Relocation | Metaheuristic (Optimised) |
 
-**Contraints**
+**Constraints**
 - Bakery depot delivering to multiple customers using a fleet of identical vans.
 - Each route must start and end at the depot.
 - Every customer must be visited exactly once.
@@ -33,7 +36,7 @@ This Project compares the implementation of 3 algorithms against the **Vehicle R
 
 **Requirements**
 ```bash
-pip  install  matplotlib numpy
+pip install -r requirements.txt
 ```
 Python 3.10+ is required
 
@@ -71,7 +74,7 @@ Visualisation PNGs are saved to `outputs/` automatically when using `[V]`.
 ---
 
 **Test Cases**
-All test inputs are JSON files in `tests/`. Each file follows this schema:
+All test inputs are JSON files in `src/tests/`. Each file follows this schema:
 
 ```json
 {
@@ -87,3 +90,6 @@ All test inputs are JSON files in `tests/`. Each file follows this schema:
 -  `coordinates` is only used for graph visualisation `v` to convey routing on a graph.
 
 ---
+
+## License
+All rights reserved — see [LICENSE](LICENSE). Published for portfolio and demonstration purposes only.

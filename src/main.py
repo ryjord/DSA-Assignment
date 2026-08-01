@@ -6,13 +6,13 @@ import os
 from classes.models import Customer, VRPInstance
 
 # Utils
-from utils.helpers import print_solution, run_benchmark, print_benchmark_table, plot_solution, plot_comparative_analysis
+from utils.helpers import print_solution, run_benchmark, print_benchmark_table, plot_solution, plot_comparative_analysis, sanitize_filename
 from test import interactive_cli
 
 # Algorithms
-from algorthms.clarke.clarke import run_naive_solution
-from algorthms.nearest.nearest import run_ai_solution
-from algorthms.genetic.genetic import run_optimised_solution
+from algorithms.clarke.clarke import run_naive_solution
+from algorithms.nearest.nearest import run_ai_solution
+from algorithms.genetic.genetic import run_optimised_solution
 
 # Builds Instance
 def _build_bakery_instance() -> VRPInstance:
@@ -93,7 +93,7 @@ def _solve_instance(instance: VRPInstance, label: str = "", output_dir: str = "o
         plot_comparative_analysis(results, label, comp_dir)
     # Visualise plot
     for Algorithm_label, solution in solutions.items():
-        safe_name = (
+        safe_name = sanitize_filename(
             f"{(label or 'instance').replace(' ', '_')}__"
             f"{Algorithm_label.replace(' ', '_').replace('/', '-')}.png"
         )
